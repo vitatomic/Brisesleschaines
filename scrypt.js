@@ -1,3 +1,4 @@
+// Contenu des overlays fullscreen
 const fullscreenContents = {
     esclavage: {
         icon: '<i class="fas fa-chain"></i>',
@@ -53,242 +54,6 @@ const elements = {
     cards: document.querySelectorAll('.card')
 };
 
-elements.cards.forEach((card, index) => {
-    card.style.opacity = '0';
-    card.style.transform = `rotateY(calc((360deg / 6) * ${index})) translateZ(400px) scale(0.8) translateY(50px)`;
-    setTimeout(() => {
-        card.style.transition = 'all 0.8s ease';
-        card.style.opacity = '1';
-        card.style.transform = `rotateY(calc((360deg / 6) * ${index})) translateZ(400px) scale(1) translateY(0)`;
-    }, index * 200);
-
-    // Gestion multi-événements (click + touch)
-    const openFullscreen = () => {
-        const key = card.dataset.fullscreen;
-        const content = fullscreenContents[key];
-        if (content) {
-            elements.fullscreenIcon.innerHTML = content.icon;
-            elements.fullscreenTitle.textContent = content.title;
-            elements.fullscreenText.innerHTML = content.text;
-            elements.fullscreenOverlay.style.background = 'none';
-            elements.fullscreenOverlay.style.opacity = '0';
-            elements.fullscreenOverlay.classList.add('show');
-            setTimeout(() => {
-                elements.fullscreenOverlay.style.opacity = '1';
-            }, 10);
-        } else {
-            console.error(`Clé non trouvée : ${key}`);
-        }
-    };
-
-    // Ajout des événements click et touchstart
-    card.addEventListener('click', openFullscreen);
-    card.addEventListener('touchstart', (e) => {
-        e.preventDefault(); // Évite le scroll ou zoom indésirable
-        openFullscreen();
-    });
-
-    // Accessibilité clavier
-    card.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            openFullscreen();
-        }
-    });
-});
-
-// Vérification des éléments essentiels
-if (!elements.fullscreenOverlay || !elements.fullscreenTitle || !elements.fullscreenText || !elements.fullscreenIcon) {
-    console.error("Erreur : Un ou plusieurs éléments DOM essentiels sont manquants.");
-} else {
-    // Fonction pour gérer l'affichage des overlays avec animation
-    const manageOverlay = (link, overlay, closeSelector) => {
-        const closeBtn = overlay?.querySelector(closeSelector);
-
-        if (link && overlay) {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                overlay.style.opacity = '0';
-                overlay.classList.add('show');
-                setTimeout(() => {
-                    overlay.style.opacity = '1';
-                }, 10);
-            });
-
-            overlay.addEventListener('click', (e) => {
-                if (e.target === overlay) {
-                    overlay.style.opacity = '0';
-                    setTimeout(() => {
-                        overlay.classList.remove('show');
-                    }, 500);
-                }
-            });
-
-            if (closeBtn) {
-                closeBtn.addEventListener('click', () => {
-                    overlay.style.opacity = '0';
-                    setTimeout(() => {
-                        overlay.classList.remove('show');
-                    }, 500);
-                });
-            }
-        }
-    };
-
-    // Initialisation des overlays Crédits, Aide, Contact
-    manageOverlay(elements.creditsLink, elements.creditsOverlay, '.close-credits-btn');
-    manageOverlay(elements.helpLink, elements.helpOverlay, '.close-credits-btn');
-    manageOverlay(elements.contactLink, elements.contactOverlay, '.close-credits-btn');
-
-    // Gestion de l'intro screen
-    if (elements.glassBox) {
-        elements.glassBox.addEventListener('click', () => {
-            elements.introScreen.classList.add('hidden');
-            setTimeout(() => {
-                elements.introScreen.style.display = 'none';
-                elements.wrapper.classList.add('visible');
-            }, 1000);
-        });
-    }
-
-    // Gestion des cartes avec animation d’entrée
-    elements.cards.forEach((card, index) => {
-        card.style.opacity = '0';
-        card.style.transform = `rotateY(calc((360deg / 6) * ${index})) translateZ(400px) scale(0.8) translateY(50px)`;
-        setTimeout(() => {
-            card.style.transition = 'all 0.8s ease';
-            card.style.opacity = '1';
-            card.style.transform = `rotateY(calc((360deg / 6) * ${index})) translateZ(400px) scale(1) translateY(0)`;
-        }, index * 200);
-
-        card.addEventListener('click', () => {
-            const key = card.dataset.fullscreen;
-            const content = fullscreenContents[key];
-            if (content) {
-                elements.fullscreenIcon.innerHTML = content.icon;
-                elements.fullscreenTitle.textContent = content.title;
-                elements.fullscreenText.innerHTML = content.text;
-                elements.fullscreenOverlay.style.background = 'none'; // Garde l’overlay transparent
-                elements.fullscreenOverlay.style.opacity = '0';
-                elements.fullscreenOverlay.classList.add('show');
-                setTimeout(() => {
-                    elements.fullscreenOverlay.style.opacity = '1';
-                }, 10);
-            } else {
-                console.error(`Clé non trouvée : ${key}`);
-            }
-        });
-
-        // Accessibilité : clic via clavier
-        card.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                card.click();
-            }
-        });
-    });
-
-    // Fermeture du fullscreen
-    if (elements.fullscreenOverlay) {
-        elements.fullscreenOverlay.addEventListener('click', (e) => {
-            if (e.target === elements.fullscreenOverlay) {
-                elements.fullscreenOverlay.style.opacity = '0';
-                setTimeout(() => {
-                    elements.fullscreenOverlay.classList.remove('show');
-                }, 500);
-            }
-        });
-    }
-
-    if (elements.closeBtn) {
-        elements.closeBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            elements.fullscreenOverlay.style.opacity = '0';
-            setTimeout(() => {
-                elements.fullscreenOverlay.classList.remove('show');
-            }, 500);
-        });
-    }
-
-    // Gestion du burger menu
-    if (elements.burger && elements.navLinks) {
-        elements.burger.addEventListener('click', () => {
-            elements.navLinks.classList.toggle('active');
-            elements.burger.classList.toggle('toggle');
-        });
-
-        // Fermeture du menu burger après clic sur un lien
-        elements.navLinks.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                elements.navLinks.classList.remove('active');
-                elements.burger.classList.remove('toggle');
-            });
-        });
-    }
-
-    // Initialisation de Particles.js
-    particlesJS("particles-js", {
-        particles: {
-            number: { value: 80, density: { enable: true, value_area: 800 } },
-            color: { value: "#00d4ff" },
-            shape: { type: "circle" },
-            opacity: { value: 0.5, random: true },
-            size: { value: 3, random: true },
-            line_linked: { enable: true, distance: 150, color: "#00d4ff", opacity: 0.4, width: 1 },
-            move: { enable: true, speed: 2, direction: "none", random: true, straight: false, out_mode: "out" }
-        },
-        interactivity: {
-            detect_on: "canvas",
-            events: { onhover: { enable: true, mode: "repulse" }, onclick: { enable: true, mode: "push" }, resize: true },
-            modes: { repulse: { distance: 100, duration: 0.4 }, push: { particles_nb: 4 } }
-        },
-        retina_detect: true
-    });
-
-    // Gestion de la fin de la vidéo (optionnel)
-    document.getElementById('myVideo').addEventListener('ended', () => {
-        elements.introScreen.classList.add('hidden');
-        setTimeout(() => {
-            elements.introScreen.style.display = 'none';
-            elements.wrapper.classList.add('visible');
-        }, 1000);
-    });
-
-    // Log de chargement
-    window.addEventListener('load', () => {
-        console.log('Page chargée avec succès');
-    });
-}
-// Fonction pour ajuster les dimensions des cartes
-function adjustCardSizes() {
-    const inner = document.querySelector('.inner');
-    const cards = document.querySelectorAll('.card');
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-
-    // Ajuster les variables CSS --w et --h
-    if (vw <= 768) {
-        // Sur mobile, on utilise des valeurs fixes (déjà gérées par CSS)
-        inner.style.setProperty('--w', '90vw');
-        inner.style.setProperty('--h', 'auto');
-    } else {
-        // Sur desktop, on utilise des valeurs relatives
-        const w = Math.min(vw * 0.8, 250); // Max 250px
-        const h = Math.min(vh * 0.4, 330); // Max 330px
-        inner.style.setProperty('--w', `${w}px`);
-        inner.style.setProperty('--h', `${h}px`);
-
-        // Ajuster les transformations 3D
-        cards.forEach((card, index) => {
-            card.style.transform = `rotateY(calc((360deg / 6) * ${index})) translateZ(${w + h / 2 + 50}px)`;
-        });
-    }
-}
-
-// Appeler la fonction au chargement et au redimensionnement
-window.addEventListener('load', adjustCardSizes);
-window.addEventListener('resize', adjustCardSizes);
-
 // Fonction pour ajuster les transformations des cartes
 function applyCardTransformations() {
     const isMobile = window.innerWidth <= 768;
@@ -297,6 +62,9 @@ function applyCardTransformations() {
             // Sur mobile, pas de transformation 3D
             card.style.opacity = '1';
             card.style.transform = 'none';
+            card.style.position = 'relative';
+            card.style.width = '100%';
+            card.style.height = '200px';
         } else {
             // Sur desktop, appliquer les transformations 3D
             card.style.opacity = '0';
@@ -308,7 +76,7 @@ function applyCardTransformations() {
             }, index * 200);
         }
 
-        // Gestion des événements (déjà corrigée dans ma réponse précédente)
+        // Gestion des événements pour ouvrir l'overlay fullscreen
         const openFullscreen = () => {
             const key = card.dataset.fullscreen;
             const content = fullscreenContents[key];
@@ -327,12 +95,14 @@ function applyCardTransformations() {
             }
         };
 
+        // Ajout des événements click et touchstart
         card.addEventListener('click', openFullscreen);
         card.addEventListener('touchstart', (e) => {
             e.preventDefault();
             openFullscreen();
         });
 
+        // Accessibilité clavier
         card.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
@@ -340,8 +110,164 @@ function applyCardTransformations() {
             }
         });
     });
+
+    // Ajuster le conteneur .inner
+    const inner = document.querySelector('.inner');
+    if (isMobile) {
+        inner.style.transform = 'none';
+        inner.style.animation = 'none';
+        inner.style.display = 'flex';
+        inner.style.flexDirection = 'column';
+        inner.style.gap = '20px';
+        inner.style.width = '90vw';
+        inner.style.height = 'auto';
+        inner.style.margin = '0 auto';
+    } else {
+        inner.style.width = '250px';
+        inner.style.height = '330px';
+        inner.style.transformStyle = 'preserve-3d';
+        inner.style.animation = 'rotating 15s linear infinite';
+    }
 }
 
 // Appeler la fonction au chargement et au redimensionnement
 window.addEventListener('load', applyCardTransformations);
 window.addEventListener('resize', applyCardTransformations);
+
+// Désactiver le défilement sur PC
+function controlPageScroll() {
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) {
+        document.documentElement.style.overflowY = 'auto';
+        document.body.style.overflowY = 'auto';
+        document.documentElement.style.height = 'auto';
+        document.body.style.height = 'auto';
+    } else {
+        document.documentElement.style.overflowY = 'hidden';
+        document.body.style.overflowY = 'hidden';
+        document.documentElement.style.height = '100%';
+        document.body.style.height = '100%';
+    }
+}
+
+window.addEventListener('load', controlPageScroll);
+window.addEventListener('resize', controlPageScroll);
+
+// Gestion de l'intro screen
+if (elements.glassBox) {
+    elements.glassBox.addEventListener('click', () => {
+        elements.introScreen.classList.add('hidden');
+        setTimeout(() => {
+            elements.introScreen.style.display = 'none';
+            elements.wrapper.classList.add('visible');
+        }, 1000);
+    });
+}
+
+// Gestion des overlays (Crédits, Aide, Contact)
+const manageOverlay = (link, overlay, closeSelector) => {
+    const closeBtn = overlay?.querySelector(closeSelector);
+
+    if (link && overlay) {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            overlay.style.opacity = '0';
+            overlay.classList.add('show');
+            setTimeout(() => {
+                overlay.style.opacity = '1';
+            }, 10);
+        });
+
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                overlay.style.opacity = '0';
+                setTimeout(() => {
+                    overlay.classList.remove('show');
+                }, 500);
+            }
+        });
+
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                overlay.style.opacity = '0';
+                setTimeout(() => {
+                    overlay.classList.remove('show');
+                }, 500);
+            });
+        }
+    }
+};
+
+manageOverlay(elements.creditsLink, elements.creditsOverlay, '.close-credits-btn');
+manageOverlay(elements.helpLink, elements.helpOverlay, '.close-credits-btn');
+manageOverlay(elements.contactLink, elements.contactOverlay, '.close-credits-btn');
+
+// Fermeture du fullscreen overlay
+if (elements.fullscreenOverlay) {
+    elements.fullscreenOverlay.addEventListener('click', (e) => {
+        if (e.target === elements.fullscreenOverlay) {
+            elements.fullscreenOverlay.style.opacity = '0';
+            setTimeout(() => {
+                elements.fullscreenOverlay.classList.remove('show');
+            }, 500);
+        }
+    });
+}
+
+if (elements.closeBtn) {
+    elements.closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        elements.fullscreenOverlay.style.opacity = '0';
+        setTimeout(() => {
+            elements.fullscreenOverlay.classList.remove('show');
+        }, 500);
+    });
+}
+
+// Gestion du burger menu
+if (elements.burger && elements.navLinks) {
+    elements.burger.addEventListener('click', () => {
+        elements.navLinks.classList.toggle('active');
+        elements.burger.classList.toggle('toggle');
+    });
+
+    elements.navLinks.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            elements.navLinks.classList.remove('active');
+            elements.burger.classList.remove('toggle');
+        });
+    });
+}
+
+// Initialisation de Particles.js
+particlesJS("particles-js", {
+    particles: {
+        number: { value: 80, density: { enable: true, value_area: 800 } },
+        color: { value: "#00d4ff" },
+        shape: { type: "circle" },
+        opacity: { value: 0.5, random: true },
+        size: { value: 3, random: true },
+        line_linked: { enable: true, distance: 150, color: "#00d4ff", opacity: 0.4, width: 1 },
+        move: { enable: true, speed: 2, direction: "none", random: true, straight: false, out_mode: "out" }
+    },
+    interactivity: {
+        detect_on: "canvas",
+        events: { onhover: { enable: true, mode: "repulse" }, onclick: { enable: true, mode: "push" }, resize: true },
+        modes: { repulse: { distance: 100, duration: 0.4 }, push: { particles_nb: 4 } }
+    },
+    retina_detect: true
+});
+
+// Gestion de la fin de la vidéo (optionnel)
+document.getElementById('myVideo').addEventListener('ended', () => {
+    elements.introScreen.classList.add('hidden');
+    setTimeout(() => {
+        elements.introScreen.style.display = 'none';
+        elements.wrapper.classList.add('visible');
+    }, 1000);
+});
+
+// Log de chargement
+window.addEventListener('load', () => {
+    console.log('Page chargée avec succès');
+});
