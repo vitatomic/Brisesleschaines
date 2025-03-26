@@ -1659,3 +1659,36 @@ div#fullscreen-overlay {
   color: #65bef1;
   text-decoration: underline;
 }
+@media screen and (max-width: 768px) {
+  .inner {
+      animation: none;
+      transform: none;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 100%; /* S'assurer que ça prend toute la largeur */
+  }
+
+  .card {
+      position: relative;
+      transform: none;
+      width: 90%; /* Plus adapté aux petits écrans */
+      max-width: 300px;
+      margin: 0 auto;
+      padding: 1.2rem;
+      touch-action: manipulation; /* Améliore la réactivité au toucher */
+  }
+
+  .card:hover {
+      transform: scale(1.05);
+  }
+
+  .card:active {
+      transform: scale(0.98);
+  }
+
+  /* Désactiver les transformations 3D complexes sur mobile */
+  .wrapper {
+      perspective: none;
+  }
+}
