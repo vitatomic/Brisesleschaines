@@ -288,3 +288,60 @@ function adjustCardSizes() {
 // Appeler la fonction au chargement et au redimensionnement
 window.addEventListener('load', adjustCardSizes);
 window.addEventListener('resize', adjustCardSizes);
+
+// Fonction pour ajuster les transformations des cartes
+function applyCardTransformations() {
+    const isMobile = window.innerWidth <= 768;
+    elements.cards.forEach((card, index) => {
+        if (isMobile) {
+            // Sur mobile, pas de transformation 3D
+            card.style.opacity = '1';
+            card.style.transform = 'none';
+        } else {
+            // Sur desktop, appliquer les transformations 3D
+            card.style.opacity = '0';
+            card.style.transform = `rotateY(calc((360deg / 6) * ${index})) translateZ(400px) scale(0.8) translateY(50px)`;
+            setTimeout(() => {
+                card.style.transition = 'all 0.8s ease';
+                card.style.opacity = '1';
+                card.style.transform = `rotateY(calc((360deg / 6) * ${index})) translateZ(400px) scale(1) translateY(0)`;
+            }, index * 200);
+        }
+
+        // Gestion des événements (déjà corrigée dans ma réponse précédente)
+        const openFullscreen = () => {
+            const key = card.dataset.fullscreen;
+            const content = fullscreenContents[key];
+            if (content) {
+                elements.fullscreenIcon.innerHTML = content.icon;
+                elements.fullscreenTitle.textContent = content.title;
+                elements.fullscreenText.innerHTML = content.text;
+                elements.fullscreenOverlay.style.background = 'none';
+                elements.fullscreenOverlay.style.opacity = '0';
+                elements.fullscreenOverlay.classList.add('show');
+                setTimeout(() => {
+                    elements.fullscreenOverlay.style.opacity = '1';
+                }, 10);
+            } else {
+                console.error(`Clé non trouvée : ${key}`);
+            }
+        };
+
+        card.addEventListener('click', openFullscreen);
+        card.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            openFullscreen();
+        });
+
+        card.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                openFullscreen();
+            }
+        });
+    });
+}
+
+// Appeler la fonction au chargement et au redimensionnement
+window.addEventListener('load', applyCardTransformations);
+window.addEventListener('resize', applyCardTransformations);
