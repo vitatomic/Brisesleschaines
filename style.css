@@ -1659,6 +1659,33 @@ div#fullscreen-overlay {
   color: #65bef1;
   text-decoration: underline;
 }
+.inner {
+  --w: 80vw; /* Largeur relative à la largeur de l'écran */
+  --h: 40vh; /* Hauteur relative à la hauteur de l'écran */
+  position: relative;
+  width: var(--w);
+  height: var(--h);
+  transform-style: preserve-3d;
+  animation: rotating 15s linear infinite;
+}
+
+.card {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  transform: rotateY(calc((360deg / var(--quantity)) * var(--index))) 
+            translateZ(calc((var(--w) + var(--h)) / 2 + 50px));
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(0, 212, 255, 0.25));
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+  box-shadow: 0 6px 20px rgba(0, 153, 255, 0.4);
+}
+
+/* Media query pour mobile */
 @media screen and (max-width: 768px) {
   .inner {
       animation: none;
@@ -1666,17 +1693,18 @@ div#fullscreen-overlay {
       display: flex;
       flex-direction: column;
       gap: 20px;
-      width: 100%; /* S'assurer que ça prend toute la largeur */
+      width: 90vw; /* Ajuste la largeur pour mobile */
+      height: auto; /* Hauteur automatique pour éviter les débordements */
   }
 
   .card {
       position: relative;
       transform: none;
-      width: 90%; /* Plus adapté aux petits écrans */
-      max-width: 300px;
+      width: 100%;
+      height: 200px; /* Hauteur fixe pour chaque carte sur mobile */
       margin: 0 auto;
-      padding: 1.2rem;
-      touch-action: manipulation; /* Améliore la réactivité au toucher */
+      padding: 1rem;
+      touch-action: manipulation;
   }
 
   .card:hover {
@@ -1687,8 +1715,52 @@ div#fullscreen-overlay {
       transform: scale(0.98);
   }
 
-  /* Désactiver les transformations 3D complexes sur mobile */
   .wrapper {
       perspective: none;
+      min-height: auto; /* Évite les problèmes de hauteur */
+      padding: 20px 0; /* Ajoute un peu d'espace */
+  }
+}
+
+/* Ajustement pour écrans très petits (ex. < 400px) */
+@media screen and (max-width: 400px) {
+  .inner {
+      width: 95vw; /* Encore plus compact */
+  }
+
+  .card {
+      height: 180px; /* Réduit la hauteur pour les petits écrans */
+      padding: 0.8rem;
+  }
+
+  .card h1 {
+      font-size: 1.2rem; /* Réduit la taille du texte */
+  }
+
+  .card p {
+      font-size: 0.9rem;
+  }
+
+  .card i, .card .emoji {
+      font-size: 2rem; /* Réduit la taille des icônes */
+  }
+}
+
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  perspective: 10000px;
+  opacity: 0;
+  transition: opacity 1s ease;
+  padding: 20px 0; /* Ajoute un padding pour éviter les débordements */
+}
+
+@media screen and (max-width: 768px) {
+  .wrapper {
+      min-height: auto; /* Hauteur automatique sur mobile */
+      height: auto;
+      padding: 20px 0;
   }
 }
