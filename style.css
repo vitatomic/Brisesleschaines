@@ -1764,3 +1764,119 @@ div#fullscreen-overlay {
       padding: 20px 0;
   }
 }
+
+/* Par défaut, pour desktop */
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  perspective: 10000px;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.inner {
+  --w: 250px;
+  --h: 330px;
+  position: relative;
+  width: var(--w);
+  height: var(--h);
+  transform-style: preserve-3d;
+  animation: rotating 15s linear infinite;
+}
+
+.card {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  transform: rotateY(calc((360deg / var(--quantity)) * var(--index))) 
+            translateZ(calc((var(--w) + var(--h)) / 2 + 50px));
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(0, 212, 255, 0.25));
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+  box-shadow: 0 6px 20px rgba(0, 153, 255, 0.4);
+}
+
+/* Media query pour mobile */
+@media screen and (max-width: 768px) {
+  .wrapper {
+      min-height: auto; /* Permet le scroll */
+      height: auto;
+      padding: 20px 0; /* Ajoute un peu d'espace en haut et en bas */
+      display: block; /* Change la disposition pour permettre le scroll */
+  }
+
+  .inner {
+      animation: none; /* Désactive la rotation */
+      transform: none; /* Supprime les transformations 3D */
+      display: flex;
+      flex-direction: column; /* Affiche les cartes de haut en bas */
+      gap: 20px; /* Espacement entre les cartes */
+      width: 90vw; /* Largeur adaptée à l'écran */
+      height: auto; /* Hauteur automatique pour toutes les cartes */
+      margin: 0 auto; /* Centre horizontalement */
+  }
+
+  .card {
+      position: relative; /* Positionnement normal, pas absolu */
+      transform: none; /* Supprime toutes les transformations 3D */
+      width: 100%; /* Prend toute la largeur disponible */
+      height: 200px; /* Hauteur fixe pour chaque carte */
+      margin: 0; /* Pas de marge supplémentaire */
+      padding: 1rem;
+      touch-action: manipulation; /* Améliore la réactivité au toucher */
+  }
+
+  .card:hover {
+      transform: scale(1.05); /* Effet de zoom au survol */
+  }
+
+  .card:active {
+      transform: scale(0.98); /* Effet de réduction au clic */
+  }
+
+  /* S'assurer que le body permet le scroll */
+  body {
+      overflow-y: auto; /* Permet le scroll vertical */
+  }
+}
+
+/* Ajustement pour écrans très petits (ex. < 400px) */
+@media screen and (max-width: 400px) {
+  .inner {
+      width: 95vw; /* Encore plus compact */
+  }
+
+  .card {
+      height: 180px; /* Réduit la hauteur pour les petits écrans */
+      padding: 0.8rem;
+  }
+
+  .card h1 {
+      font-size: 1.2rem; /* Réduit la taille du texte */
+  }
+
+  .card p {
+      font-size: 0.9rem;
+  }
+
+  .card i, .card .emoji {
+      font-size: 2rem; /* Réduit la taille des icônes */
+  }
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Évite le scroll horizontal */
+}
+
+body {
+  overflow-y: auto; /* Permet le scroll vertical */
+}
