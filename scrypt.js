@@ -259,3 +259,32 @@ if (!elements.fullscreenOverlay || !elements.fullscreenTitle || !elements.fullsc
         console.log('Page chargée avec succès');
     });
 }
+// Fonction pour ajuster les dimensions des cartes
+function adjustCardSizes() {
+    const inner = document.querySelector('.inner');
+    const cards = document.querySelectorAll('.card');
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    // Ajuster les variables CSS --w et --h
+    if (vw <= 768) {
+        // Sur mobile, on utilise des valeurs fixes (déjà gérées par CSS)
+        inner.style.setProperty('--w', '90vw');
+        inner.style.setProperty('--h', 'auto');
+    } else {
+        // Sur desktop, on utilise des valeurs relatives
+        const w = Math.min(vw * 0.8, 250); // Max 250px
+        const h = Math.min(vh * 0.4, 330); // Max 330px
+        inner.style.setProperty('--w', `${w}px`);
+        inner.style.setProperty('--h', `${h}px`);
+
+        // Ajuster les transformations 3D
+        cards.forEach((card, index) => {
+            card.style.transform = `rotateY(calc((360deg / 6) * ${index})) translateZ(${w + h / 2 + 50}px)`;
+        });
+    }
+}
+
+// Appeler la fonction au chargement et au redimensionnement
+window.addEventListener('load', adjustCardSizes);
+window.addEventListener('resize', adjustCardSizes);
