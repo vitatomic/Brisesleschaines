@@ -53,6 +53,50 @@ const elements = {
     cards: document.querySelectorAll('.card')
 };
 
+elements.cards.forEach((card, index) => {
+    card.style.opacity = '0';
+    card.style.transform = `rotateY(calc((360deg / 6) * ${index})) translateZ(400px) scale(0.8) translateY(50px)`;
+    setTimeout(() => {
+        card.style.transition = 'all 0.8s ease';
+        card.style.opacity = '1';
+        card.style.transform = `rotateY(calc((360deg / 6) * ${index})) translateZ(400px) scale(1) translateY(0)`;
+    }, index * 200);
+
+    // Gestion multi-événements (click + touch)
+    const openFullscreen = () => {
+        const key = card.dataset.fullscreen;
+        const content = fullscreenContents[key];
+        if (content) {
+            elements.fullscreenIcon.innerHTML = content.icon;
+            elements.fullscreenTitle.textContent = content.title;
+            elements.fullscreenText.innerHTML = content.text;
+            elements.fullscreenOverlay.style.background = 'none';
+            elements.fullscreenOverlay.style.opacity = '0';
+            elements.fullscreenOverlay.classList.add('show');
+            setTimeout(() => {
+                elements.fullscreenOverlay.style.opacity = '1';
+            }, 10);
+        } else {
+            console.error(`Clé non trouvée : ${key}`);
+        }
+    };
+
+    // Ajout des événements click et touchstart
+    card.addEventListener('click', openFullscreen);
+    card.addEventListener('touchstart', (e) => {
+        e.preventDefault(); // Évite le scroll ou zoom indésirable
+        openFullscreen();
+    });
+
+    // Accessibilité clavier
+    card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openFullscreen();
+        }
+    });
+});
+
 // Vérification des éléments essentiels
 if (!elements.fullscreenOverlay || !elements.fullscreenTitle || !elements.fullscreenText || !elements.fullscreenIcon) {
     console.error("Erreur : Un ou plusieurs éléments DOM essentiels sont manquants.");
